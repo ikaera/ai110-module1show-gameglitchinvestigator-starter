@@ -7,7 +7,7 @@ def get_range_for_difficulty(difficulty: str):
     if difficulty == "Normal":
         return 1, 100
     if difficulty == "Hard":  # Bug 2 — Hard difficulty range is wrong (1-50 instead of larger than Normal's 1-100)
-        return 1, 50  # <--- FIXME here
+        return 1, 150  # <--- FIXME here FIXED
     return 1, 100
 
 
@@ -82,7 +82,7 @@ difficulty = st.sidebar.selectbox(
 )
 # Bug 3 — Easy attempts wrong (decreases to 6 instead of increasing above Normal's 8)
 attempt_limit_map = {
-    "Easy": 6, # <-- FIXME here
+    "Easy": 11, # <-- FIXME here FIXED
     "Normal": 8,
     "Hard": 5,
 }
@@ -136,9 +136,15 @@ with col3:
     show_hint = st.checkbox("Show hint", value=True)
 # Bug 4 — New Game doesn't reset status/history (This is in app.py:134-138:)
 if new_game:
+    # st.session_state.attempts = 0
+    # st.session_state.secret = random.randint(1, 100)
+    # st.success("New game started.") #  # FIXME: status and history are never reset here
+    # st.rerun()
     st.session_state.attempts = 0
-    st.session_state.secret = random.randint(1, 100)
-    st.success("New game started.") #  # FIXME: status and history are never reset here
+    st.session_state.secret = random.randint(low, high)  # use difficulty range
+    st.session_state.status = "playing"                  # unfreeze the game
+    st.session_state.history = []                        # clear old guesses
+    st.success("New game started.")
     st.rerun()
 
 if st.session_state.status != "playing":
