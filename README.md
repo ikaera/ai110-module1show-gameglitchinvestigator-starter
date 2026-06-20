@@ -25,28 +25,45 @@ It wrote the code, ran away, and now the game is unplayable.
 
 ## 📝 Document Your Experience
 
-- [ ] Describe the game's purpose.
-- [ ] Detail which bugs you found.
-- [ ] Explain what fixes you applied.
+<!-- ADDED: Filled in per Step 1 instructions -->
+**Game purpose:** A number-guessing game where the player picks a difficulty (Easy / Normal / Hard), receives "Too High" or "Too Low" hints after each guess, and wins by finding the secret number within the allowed attempts.
+
+**Bugs found:**
+1. **Backwards hints (Bug 1)** — `check_guess` compared `guess` and `secret` with a type inconsistency. When `secret` was a string, Python evaluated `6 > "59"` lexicographically (comparing `"6"` vs `"5"`), flipping the result. Fix: cast both values to `int` before comparison.
+2. **Hard difficulty range too narrow (Bug 2)** — "Hard" used a range of 1–50 instead of 1–150. Fix: updated `get_range_for_difficulty("Hard")` to return `(1, 150)`.
+3. **Easy difficulty attempt count too low (Bug 3)** — "Easy" gave only 6 attempts (less than Normal's 8), making it paradoxically harder. Fix: set Easy → 11, Normal → 8, Hard → 5 so more attempts reward the smaller range.
+4. **New Game button freezes (Bug 4)** — The handler reset `secret` and `attempts` but left `st.session_state.status = "won"`. On the next rerun Streamlit hit the win-gate and called `st.stop()`, blocking the new game. Fix: also reset `status = "playing"` and clear `history` in the handler.
 
 ## 📸 Demo Walkthrough
 
-Describe your fixed game in numbered steps so a reader can follow along without watching a video:
-
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
-
-**Screenshot** *(optional)*: <!-- Insert a screenshot of your fixed, winning game here -->
+<!-- ADDED: Text-based walkthrough of the fixed game end-to-end -->
+1. Player selects **Normal** difficulty (range 1–100, 8 attempts). The sidebar shows "Attempts remaining: 8".
+2. Player enters a guess of **40**. Game returns **"Go HIGHER!"** and the attempt counter drops to 7.
+3. Player enters **70**. Game returns **"Go LOWER!"** and the counter drops to 6.
+4. Player enters **55**. Game returns **"Go HIGHER!"** — counter drops to 5.
+5. Player enters **63**. Game returns **"Go LOWER!"** — counter drops to 4.
+6. Player enters **59** — the secret number. Game displays **"You win! 🎉"** and locks the input.
+7. Score updates: +1 win added to the session total shown in the sidebar.
+8. Player clicks **New Game**. The banner clears, history resets, a new secret is generated, and the input unlocks — ready for another round.
 
 ## 🧪 Test Results
 
+<!-- ADDED: Actual pytest output from Challenge 1 advanced edge-case tests -->
 ```
-# Paste your pytest output here, e.g.:
-# pytest tests/
-# ========================= X passed in 0.XXs =========================
+$ python -m pytest tests/test_game_logic.py -v
+============================= test session starts =============================
+collected 8 items
+
+tests/test_game_logic.py::test_winning_guess                  PASSED [ 12%]
+tests/test_game_logic.py::test_guess_too_high                 PASSED [ 25%]
+tests/test_game_logic.py::test_guess_too_low                  PASSED [ 37%]
+tests/test_game_logic.py::test_bug1_low_guess_vs_high_secret  PASSED [ 50%]
+tests/test_game_logic.py::test_hard_range_exact               PASSED [ 62%]
+tests/test_game_logic.py::test_hard_range_wider_than_normal   PASSED [ 75%]
+tests/test_game_logic.py::test_easy_attempts_exact            PASSED [ 87%]
+tests/test_game_logic.py::test_attempt_order                  PASSED [100%]
+
+============================== 8 passed in 0.03s ==============================
 ```
 
 ## 🚀 Stretch Features
