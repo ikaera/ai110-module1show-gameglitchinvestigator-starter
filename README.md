@@ -79,6 +79,50 @@ tests/test_game_logic.py::test_case_sensitivity_attempts PASSED          [100%]
 ============================= 17 passed in 0.05s ==============================
 ```
 
-## 🚀 Stretch Features
+## 🚀 Stretch Features — Challenge 4: Enhanced Game UI
 
-- [ ] [If you choose to complete Challenge 4, describe the Enhanced UI changes here — a screenshot is optional]
+Four UI enhancements were added to `app.py`. All changes are purely presentational — no game logic was modified.
+
+### 1. Color-coded directional hints
+
+**What changed:** Replaced the single flat `st.warning` (yellow) on [app.py:135–137](app.py) with three distinct Streamlit alert types based on the outcome.
+
+| Outcome | Component | Color |
+|---------|-----------|-------|
+| Win | `st.success` | Green |
+| Too High | `st.error` | Red |
+| Too Low | `st.info` | Blue |
+
+The hint text was also made more descriptive:
+- `"📉 Go LOWER! Your guess was too high."` (red)
+- `"📈 Go HIGHER! Your guess was too low."` (blue)
+- `"🎉 Correct! You found it!"` (green)
+
+### 2. Hot/Cold proximity badge
+
+**What changed:** After every non-win guess, a `st.caption` line appears below the directional hint showing how close the guess is as a temperature emoji. Computed in [app.py:149–162](app.py) using `abs(guess - secret) / range_span`.
+
+| Distance (% of range) | Badge |
+|-----------------------|-------|
+| ≤ 5% | 🌋 BURNING HOT — incredibly close! |
+| ≤ 15% | 🔥 Hot — very close! |
+| ≤ 30% | 🌡️ Warm — getting there. |
+| ≤ 50% | 🌬️ Cold — quite far off. |
+| > 50% | 🧊 Freezing — way off. |
+
+This adds a second signal beyond direction — useful for players learning binary search strategy.
+
+### 3. End-of-game session summary table
+
+**What changed:** When the game ends (won or lost), a `📋 Game Summary` section renders above the win/loss message using `st.table` in [app.py:115–126](app.py). It shows every numeric guess with its result and distance from the secret.
+
+| # | Guess | Result | Distance |
+|---|-------|--------|----------|
+| 1 | 10 | 📈 Too Low | 12 |
+| 2 | 22 | ✅ Win | 0 |
+
+Outcomes are recomputed from `history` using `check_guess` — no new data is stored.
+
+### 4. Fixed hardcoded range in the info banner
+
+**What changed:** [app.py:78–81](app.py) previously always said "between 1 and 100" regardless of difficulty. Now uses `{low}` and `{high}` so Easy shows "1 and 20" and Hard shows "1 and 150".

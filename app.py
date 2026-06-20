@@ -76,7 +76,7 @@ if "history" not in st.session_state:
 st.subheader("Make a guess")
 
 st.info(
-    f"Guess a number between 1 and 100. "
+    f"Guess a number between {low} and {high}. "
     f"Attempts left: {attempt_limit - st.session_state.attempts}"
 )
 
@@ -112,6 +112,22 @@ if new_game:
     st.rerun()
 
 if st.session_state.status != "playing":
+    # End-of-game summary table — shows every guess with outcome and distance from secret
+    secret = st.session_state.secret
+    numeric_history = [g for g in st.session_state.history if isinstance(g, int)]
+    if numeric_history:
+        st.subheader("📋 Game Summary")
+        rows = []
+        for i, guess in enumerate(numeric_history, start=1):
+            result = check_guess(guess, secret)
+            labels = {"Win": "✅ Win", "Too High": "📉 Too High", "Too Low": "📈 Too Low"}
+            result_label = labels.get(result, result)
+            rows.append({
+                "#": i, "Guess": guess,
+                "Result": result_label, "Distance": abs(guess - secret),
+            })
+        st.table(rows)
+
     if st.session_state.status == "won":
         st.success("You already won. Start a new game to play again.")
     else:
@@ -133,8 +149,30 @@ if submit:
         outcome = check_guess(guess_int, secret)
 
         if show_hint:
-            messages = {"Win": "🎉 Correct!", "Too High": "📉 Go LOWER!", "Too Low": "📈 Go HIGHER!"}
-            st.warning(messages.get(outcome, ""))
+            # Color-coded directional hints: red = Too High, blue = Too Low, green = Win
+            if outcome == "Win":
+                st.success("🎉 Correct! You found it!")
+            elif outcome == "Too High":
+                st.error("📉 Go LOWER! Your guess was too high.")
+            else:
+                st.info("📈 Go HIGHER! Your guess was too low.")
+
+            # Hot/Cold proximity badge (mid-game only — reveals closeness, not direction)
+            if outcome != "Win":
+                distance = abs(guess_int - secret)
+                range_span = high - low
+                pct = distance / range_span
+                if pct <= 0.05:
+                    temp_label = "🌋 BURNING HOT — incredibly close!"
+                elif pct <= 0.15:
+                    temp_label = "🔥 Hot — very close!"
+                elif pct <= 0.30:
+                    temp_label = "🌡️ Warm — getting there."
+                elif pct <= 0.50:
+                    temp_label = "🌬️ Cold — quite far off."
+                else:
+                    temp_label = "🧊 Freezing — way off."
+                st.caption(f"Proximity: {temp_label}")
 
         st.session_state.score = update_score(
             current_score=st.session_state.score,
