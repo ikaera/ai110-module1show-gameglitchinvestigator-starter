@@ -6,8 +6,8 @@ def get_range_for_difficulty(difficulty: str):
         return 1, 20
     if difficulty == "Normal":
         return 1, 100
-    if difficulty == "Hard":
-        return 1, 50
+    if difficulty == "Hard":  # Bug 2 — Hard difficulty range is wrong (1-50 instead of larger than Normal's 1-100)
+        return 1, 50  # <--- FIXME here
     return 1, 100
 
 
@@ -76,9 +76,9 @@ difficulty = st.sidebar.selectbox(
     ["Easy", "Normal", "Hard"],
     index=1,
 )
-
+# Bug 3 — Easy attempts wrong (decreases to 6 instead of increasing above Normal's 8)
 attempt_limit_map = {
-    "Easy": 6,
+    "Easy": 6, # <-- FIXME here
     "Normal": 8,
     "Hard": 5,
 }
@@ -130,11 +130,11 @@ with col2:
     new_game = st.button("New Game 🔁")
 with col3:
     show_hint = st.checkbox("Show hint", value=True)
-
+# Bug 4 — New Game doesn't reset status/history (This is in app.py:134-138:)
 if new_game:
     st.session_state.attempts = 0
     st.session_state.secret = random.randint(1, 100)
-    st.success("New game started.")
+    st.success("New game started.") #  # FIXME: status and history are never reset here
     st.rerun()
 
 if st.session_state.status != "playing":
@@ -154,9 +154,9 @@ if submit:
         st.error(err)
     else:
         st.session_state.history.append(guess_int)
-
+        # Bug 1 — Wrong hint direction (guess 6, secret 59 → shows "Go LOWER!" instead of "Go HIGHER!")
         if st.session_state.attempts % 2 == 0:
-            secret = str(st.session_state.secret)
+            secret = str(st.session_state.secret) # <--- FIXME here
         else:
             secret = st.session_state.secret
 
