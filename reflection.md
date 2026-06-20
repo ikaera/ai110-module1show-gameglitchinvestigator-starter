@@ -12,11 +12,12 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 
 Document at least 3 bugs you found. Add rows as needed.
 
-| Input Used                            | Expected Behavior                           | Actual Behavior                                        | Console Error / Output |
-| ------------------------------------- | ------------------------------------------- | ------------------------------------------------------ | ---------------------- |
-| 6 (secret: 59)                        | "Go HIGHER!" hint                           | "Go LOWER!" hint shown                                 | none                   |
-| Change difficulty from normal to hard | Range should increase and attempts decrease | instead Range decreases, attempts decrease is normal   | none                   |
-| Change difficulty from normal to easy | Range should decrease and attempts increase | Range decreases but attempts also decrease from 8 to 6 | none                   |
+| Input Used                                                       | Expected Behavior                           | Actual Behavior                                                                                                    | Console Error / Output |
+| ---------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------- |
+| 6 (secret #: 59)                                                 | "Go HIGHER!" hint                           | "Go LOWER!" hint shown                                                                                             | none                   |
+| Change difficulty from normal (range 1-100, attempts: 8) to hard | Range should increase and attempts decrease | instead Range decreases, attempts decrease is normal (range 1-50, attempts: 5)                                     | none                   |
+| Change difficulty from normal (range 1-100, attempts: 8) to easy | Range should decrease and attempts increase | Range decreases but attempts also decrease from 8 to 6 (range 1-20, attempts: 6)                                   | none                   |
+| push New Game                                                    | start new game                              | "You already won. Start a new game to play again"- persists, history does not clear up and new game does not start | none                   |
 
 ---
 
