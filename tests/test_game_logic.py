@@ -49,3 +49,61 @@ def test_attempt_order():
     # Logical rule: easier difficulty = more attempts allowed
     # Easy (11) > Normal (8) > Hard (5)
     assert get_attempt_limit("Easy") > get_attempt_limit("Normal") > get_attempt_limit("Hard")
+
+
+# ── Edge Case Tests ───────────────────────────────────────────────────────────
+
+# Edge Case 1: Win at the lower boundary of any range (off-by-one guard)
+def test_boundary_win_lower():
+    # 1 is the smallest valid guess across all difficulties; equality must still register as a win
+    result = check_guess(1, 1)
+    assert result == "Win"
+
+# Edge Case 2: Win at the upper boundary of the Hard range
+def test_boundary_win_upper_hard():
+    # 150 is the Hard ceiling; a correct guess there must be "Win", not "Too High"
+    result = check_guess(150, 150)
+    assert result == "Win"
+
+# Edge Case 3: Guess exactly one above the lower boundary (Too High path at boundary)
+def test_boundary_too_high_just_above():
+    # guess=2, secret=1 — verifies "Too High" works right at the lower edge, not just mid-range
+    result = check_guess(2, 1)
+    assert result == "Too High"
+
+# Edge Case 4: Guess exactly one below the upper Hard boundary (Too Low path at boundary)
+def test_boundary_too_low_just_below():
+    # guess=149, secret=150 — verifies "Too Low" works right at the upper Hard ceiling
+    result = check_guess(149, 150)
+    assert result == "Too Low"
+
+# Edge Case 5: Zero as a guess (lowest possible numeric input)
+def test_zero_guess():
+    # 0 is below every valid range; it must return "Too Low", not crash or misfire
+    result = check_guess(0, 50)
+    assert result == "Too Low"
+
+# Edge Case 6: Negative guess
+def test_negative_guess():
+    # Negative numbers are outside the game's range entirely; must still return "Too Low" gracefully
+    result = check_guess(-5, 50)
+    assert result == "Too Low"
+
+# Edge Case 7: Unknown difficulty string falls through to a sensible default range
+def test_unknown_difficulty_range():
+    # "Expert" is not a defined difficulty; the fallback (1, 100) should be returned, not an error
+    result = get_range_for_difficulty("Expert")
+    assert result == (1, 100)
+
+# Edge Case 8: Unknown difficulty string falls through to a sensible default attempt limit
+def test_unknown_difficulty_attempts():
+    # "Expert" is not defined; fallback should be 8 (Normal), not crash or return None
+    result = get_attempt_limit("Expert")
+    assert result == 8
+
+# Edge Case 9: Case-sensitive difficulty lookup — lowercase "easy" is not the same as "Easy"
+def test_case_sensitivity_attempts():
+    # get_attempt_limit("easy") hits the dict miss path and returns the default 8, not 11.
+    # This test documents that behavior so a future case-insensitive fix is a deliberate choice.
+    result = get_attempt_limit("easy")
+    assert result == 8

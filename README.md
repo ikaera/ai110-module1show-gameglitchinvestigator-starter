@@ -50,20 +50,33 @@ It wrote the code, ran away, and now the game is unplayable.
 
 <!-- ADDED: Actual pytest output from Challenge 1 advanced edge-case tests -->
 ```
-$ python -m pytest tests/test_game_logic.py -v
 ============================= test session starts =============================
-collected 8 items
+platform win32 -- Python 3.13.3, pytest-9.0.3, pluggy-1.6.0 -- .venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: ai110-module1show-gameglitchinvestigator-starter
+configfile: pytest.ini
+plugins: anyio-4.13.0
+collecting ... collected 17 items
 
-tests/test_game_logic.py::test_winning_guess                  PASSED [ 12%]
-tests/test_game_logic.py::test_guess_too_high                 PASSED [ 25%]
-tests/test_game_logic.py::test_guess_too_low                  PASSED [ 37%]
-tests/test_game_logic.py::test_bug1_low_guess_vs_high_secret  PASSED [ 50%]
-tests/test_game_logic.py::test_hard_range_exact               PASSED [ 62%]
-tests/test_game_logic.py::test_hard_range_wider_than_normal   PASSED [ 75%]
-tests/test_game_logic.py::test_easy_attempts_exact            PASSED [ 87%]
-tests/test_game_logic.py::test_attempt_order                  PASSED [100%]
+tests/test_game_logic.py::test_winning_guess PASSED                      [  5%]
+tests/test_game_logic.py::test_guess_too_high PASSED                     [ 11%]
+tests/test_game_logic.py::test_guess_too_low PASSED                      [ 17%]
+tests/test_game_logic.py::test_bug1_low_guess_vs_high_secret PASSED      [ 23%]
+tests/test_game_logic.py::test_hard_range_exact PASSED                   [ 29%]
+tests/test_game_logic.py::test_hard_range_wider_than_normal PASSED       [ 35%]
+tests/test_game_logic.py::test_easy_attempts_exact PASSED                [ 41%]
+tests/test_game_logic.py::test_attempt_order PASSED                      [ 47%]
+tests/test_game_logic.py::test_boundary_win_lower PASSED                 [ 52%]
+tests/test_game_logic.py::test_boundary_win_upper_hard PASSED            [ 58%]
+tests/test_game_logic.py::test_boundary_too_high_just_above PASSED       [ 64%]
+tests/test_game_logic.py::test_boundary_too_low_just_below PASSED        [ 70%]
+tests/test_game_logic.py::test_zero_guess PASSED                         [ 76%]
+tests/test_game_logic.py::test_negative_guess PASSED                     [ 82%]
+tests/test_game_logic.py::test_unknown_difficulty_range PASSED           [ 88%]
+tests/test_game_logic.py::test_unknown_difficulty_attempts PASSED        [ 94%]
+tests/test_game_logic.py::test_case_sensitivity_attempts PASSED          [100%]
 
-============================== 8 passed in 0.03s ==============================
+============================= 17 passed in 0.05s ==============================
 ```
 
 ## 🚀 Stretch Features
