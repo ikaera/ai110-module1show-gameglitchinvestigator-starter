@@ -98,16 +98,15 @@ with col2:
     new_game = st.button("New Game 🔁")
 with col3:
     show_hint = st.checkbox("Show hint", value=True)
-# Bug 4 — New Game doesn't reset status/history (This is in app.py:134-138:)
+# FIX (Bug 4): AI explained that the original handler only reset attempts/secret, leaving
+# status="won"/"lost" and a stale history. The gate check at line ~114 then called st.stop()
+# immediately, freezing the game. Collaborated with AI chat mode to identify all three missing
+# resets: status → "playing", history → [], and secret range tied to difficulty.
 if new_game:
-    # st.session_state.attempts = 0
-    # st.session_state.secret = random.randint(1, 100)
-    # st.success("New game started.") #  # FIXME: status and history are never reset here
-    # st.rerun()
     st.session_state.attempts = 0
-    st.session_state.secret = random.randint(low, high)  # use difficulty range
-    st.session_state.status = "playing"                  # unfreeze the game
-    st.session_state.history = []                        # clear old guesses
+    st.session_state.secret = random.randint(low, high)
+    st.session_state.status = "playing"
+    st.session_state.history = []
     st.success("New game started.")
     st.rerun()
 
@@ -128,11 +127,6 @@ if submit:
         st.error(err)
     else:
         st.session_state.history.append(guess_int)
-        # Bug 1 — Wrong hint direction (guess 6, secret 59 → shows "Go LOWER!" instead of "Go HIGHER!")
-        # if st.session_state.attempts % 2 == 0:
-        #     #secret = str(st.session_state.secret) # <--- FIXME here
-        #     secret = st.session_state.secret
-        # else:
         secret = st.session_state.secret
 
         outcome = check_guess(guess_int, secret)
