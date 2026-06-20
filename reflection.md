@@ -12,11 +12,11 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 
 Document at least 3 bugs you found. Add rows as needed.
 
-| Input | Expected Behavior | Actual Behavior | Console Output / Error |
-|-------|-------------------|-----------------|------------------------|
-| | | | |
-| | | | |
-| | | | |
+| Input Used                            | Expected Behavior                           | Actual Behavior                                        | Console Error / Output |
+| ------------------------------------- | ------------------------------------------- | ------------------------------------------------------ | ---------------------- |
+| 6 (secret: 59)                        | "Go HIGHER!" hint                           | "Go LOWER!" hint shown                                 | none                   |
+| Change difficulty from normal to hard | Range should increase and attempts decrease | instead Range decreases, attempts decrease is normal   | none                   |
+| Change difficulty from normal to easy | Range should decrease and attempts increase | Range decreases but attempts also decrease from 8 to 6 | none                   |
 
 ---
 
