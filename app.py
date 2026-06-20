@@ -1,14 +1,6 @@
 import random
 import streamlit as st
-
-def get_range_for_difficulty(difficulty: str):
-    if difficulty == "Easy":
-        return 1, 20
-    if difficulty == "Normal":
-        return 1, 100
-    if difficulty == "Hard":  # Bug 2 — Hard difficulty range is wrong (1-50 instead of larger than Normal's 1-100)
-        return 1, 150  # <--- FIXME here FIXED
-    return 1, 100
+from logic_utils import get_range_for_difficulty, get_attempt_limit, check_guess
 
 
 def parse_guess(raw: str):
@@ -27,28 +19,6 @@ def parse_guess(raw: str):
         return False, None, "That is not a number."
 
     return True, value, None
-
-
-def check_guess(guess, secret):
-    if guess == secret:
-        return "Win", "🎉 Correct!"
-    if guess > secret:
-        return "Too High", "📉 Go LOWER!"
-    else:
-        return "Too Low", "📈 Go HIGHER!"
-
-    # try:
-    #     if guess > secret:
-    #         return "Too High", "📉 Go LOWER!"
-    #     else:
-    #         return "Too Low", "📈 Go HIGHER!"
-    # except TypeError:
-    #     g = str(guess)
-    #     if g == secret:
-    #         return "Win", "🎉 Correct!"
-    #     if g > secret:
-    #         return "Too High", "📈 Go HIGHER!"
-    #     return "Too Low", "📉 Go LOWER!"
 
 
 def update_score(current_score: int, outcome: str, attempt_number: int):
@@ -80,13 +50,7 @@ difficulty = st.sidebar.selectbox(
     ["Easy", "Normal", "Hard"],
     index=1,
 )
-# Bug 3 — Easy attempts wrong (decreases to 6 instead of increasing above Normal's 8)
-attempt_limit_map = {
-    "Easy": 11, # <-- FIXME here FIXED
-    "Normal": 8,
-    "Hard": 5,
-}
-attempt_limit = attempt_limit_map[difficulty]
+attempt_limit = get_attempt_limit(difficulty)  # Bug 3 fix: Easy=11, Normal=8, Hard=5
 
 low, high = get_range_for_difficulty(difficulty)
 
@@ -171,10 +135,11 @@ if submit:
         # else:
         secret = st.session_state.secret
 
-        outcome, message = check_guess(guess_int, secret)
+        outcome = check_guess(guess_int, secret)
 
         if show_hint:
-            st.warning(message)
+            messages = {"Win": "🎉 Correct!", "Too High": "📉 Go LOWER!", "Too Low": "📈 Go HIGHER!"}
+            st.warning(messages.get(outcome, ""))
 
         st.session_state.score = update_score(
             current_score=st.session_state.score,
