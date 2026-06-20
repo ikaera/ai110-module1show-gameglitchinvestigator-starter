@@ -76,21 +76,53 @@ Each test should have a comment explaining why the edge case matters.
 
 > Document your use of AI for linting or code style improvements.
 
-**Prompt used:**
+**Prompts used:**
 
 ```
-<!-- Paste the prompt you gave the AI -->
+1. Use your AI coding assistant to add professional-grade docstrings to every
+   function in logic_utils.py.
+
+2. Then, ask your AI coding assistant to review your code for PEP 8 style
+   compliance and apply its suggestions to resolve any formatting or naming
+   issues it identifies.
 ```
 
-**Linting output before:**
+**Linting output before (flake8 --max-line-length=99):**
 
 ```
-<!-- Paste relevant linter warnings/errors -->
+app.py:41:1: E305 expected 2 blank lines after class or function definition, found 1
+logic_utils.py:49:1: W293 blank line contains whitespace
+logic_utils.py:50:1: E302 expected 2 blank lines, found 1
+```
+
+**Linting output after:**
+
+```
+flake8: no issues found (exit 0)
 ```
 
 **Changes applied:**
 
-<!-- Describe what you changed based on the AI's suggestions -->
+| File | Issue | Fix Applied |
+|------|-------|-------------|
+| `logic_utils.py` | W293 — blank line between `get_attempt_limit` and `parse_guess` contained trailing whitespace | Removed the whitespace-only line |
+| `logic_utils.py` | E302 — only one blank line between `get_attempt_limit` and `parse_guess` | Added the required second blank line |
+| `logic_utils.py` | W292 — no newline at end of file | Added trailing newline |
+| `app.py` | E305 — only one blank line after `update_score` function before module-level `st.set_page_config(...)` | Added the required second blank line |
+
+**Docstrings added to `logic_utils.py`:**
+
+Every function now has a Google-style docstring with `Args:`, `Returns:`, and `Examples:` sections:
+
+| Function | What the docstring explains |
+|----------|-----------------------------|
+| `get_range_for_difficulty` | The three valid difficulty strings, the default fallback, and two usage examples |
+| `get_attempt_limit` | Why easier = more attempts, the default fallback for unknown strings, and two examples |
+| `parse_guess` | The three failure modes (None, empty, non-numeric), the decimal truncation behavior, and the three-tuple return contract |
+| `check_guess` | The three possible return values with exact conditions, and three examples |
+| `update_score` | The full scoring formula including the win floor, "Too High" parity rule, and two worked examples |
+
+**Spelling note:** the AI initially used British spellings ("unrecognized", "penalizes"). These were corrected to American English ("unrecognized", "penalizes") to match the project's existing style.
 
 ---
 
