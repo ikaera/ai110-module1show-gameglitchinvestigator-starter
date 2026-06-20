@@ -10,15 +10,33 @@
 
 **What task did you give the agent?**
 
-<!-- Describe the goal you asked the agent to accomplish -->
+> "Use your AI coding assistant agentically to plan and implement a meaningful new feature, such as a 'High Score' tracker that saves your best score to a file or a 'Guess History' sidebar that visualizes how close your previous guesses were."
+
+The agent chose to implement a **Guess History sidebar** because `st.session_state.history` was already being populated on every guess — no new data plumbing was needed, only a visualization layer.
 
 **What did the agent do?**
 
-<!-- List the steps the agent took (files edited, commands run, etc.) -->
+1. Read `app.py` in full to understand existing session state keys (`history`, `status`, `score`, `secret`), the sidebar layout, and the difficulty range variables (`low`, `high`).
+2. Planned the feature: filter `history` to numeric guesses only, compute each guess's position in the range as a 0–1 float for `st.progress()`, and reveal color-coded proximity icons (`🟢 🟡 🔴`) only after the game ends so the secret isn't accidentally leaked mid-game.
+3. Edited `app.py` — added a new sidebar section at the bottom of the file with:
+   - A `📊 Guess History` subheader
+   - A numbered entry + progress bar for each numeric guess
+   - Distance-from-secret annotation and color coding once `status` is `"won"` or `"lost"`
+   - A `st.sidebar.metric` showing the running session score
+4. Verified that the `history` list already excluded invalid (non-integer) inputs from the display by filtering with `isinstance(g, int)`.
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `app.py` | Added Guess History sidebar section (~35 lines at end of file) |
+| `ai_interactions.md` | Added this Agent Workflow entry |
 
 **What did you have to verify or fix manually?**
 
-<!-- Describe anything the agent got wrong or that required human review -->
+- Confirmed the proximity color thresholds (≤10% of range = green, ≤25% = yellow, >25% = red) made intuitive sense for all three difficulty ranges (Easy 1–20, Normal 1–100, Hard 1–150).
+- Verified that `st.progress()` accepts a float 0.0–1.0, and added `max(0.0, min(1.0, ...))` clamping to guard against guesses outside the current difficulty range (e.g., a Hard-range guess reviewed on an Easy-range sidebar).
+- No logic bugs were introduced — no manual corrections to the agent's code were needed.
 
 ---
 

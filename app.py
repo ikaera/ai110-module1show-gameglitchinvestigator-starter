@@ -159,3 +159,44 @@ if submit:
 
 st.divider()
 st.caption("Built by an AI that claims this code is production-ready.")
+
+# ── Guess History Sidebar ─────────────────────────────────────────────────────
+st.sidebar.divider()
+st.sidebar.subheader("📊 Guess History")
+
+numeric_history = [g for g in st.session_state.history if isinstance(g, int)]
+
+if not numeric_history:
+    st.sidebar.caption("No guesses yet.")
+else:
+    game_over = st.session_state.status in ("won", "lost")
+    secret = st.session_state.secret
+
+    for i, guess in enumerate(numeric_history, start=1):
+        distance = abs(guess - secret)
+        range_span = high - low
+
+        # Position in range as 0.0–1.0 for the progress bar
+        position = max(0.0, min(1.0, (guess - low) / range_span))
+
+        if game_over:
+            # Color-code by proximity: green ≤10%, yellow ≤25%, red >25%
+            proximity_pct = distance / range_span
+            if proximity_pct <= 0.10:
+                icon = "🟢"
+            elif proximity_pct <= 0.25:
+                icon = "🟡"
+            else:
+                icon = "🔴"
+            label = f"#{i}: **{guess}** {icon} (off by {distance})"
+        else:
+            label = f"#{i}: **{guess}**"
+
+        st.sidebar.markdown(label)
+        st.sidebar.progress(position)
+
+    if game_over:
+        st.sidebar.caption(f"Secret was **{secret}**.")
+
+st.sidebar.divider()
+st.sidebar.metric("Session Score", st.session_state.score)
